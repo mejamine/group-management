@@ -1,20 +1,20 @@
 
 - name: create group
   import_tasks: create-group.yml
-  when: group_action == create
+  when: group_action == 'create'
 
 - name: modify group
   import_tasks: modify-group.yml
-  when: group_action == modify
+  when: group_action == 'modify'
 
 - name: delete group 
   import_tasks: delete-group.yml
-  when: group_action == delete
+  when: group_action == 'delete'
 
 - name: add member to a group 
   import_tasks: add-member.yml
-  when: group_action == add-member
+  when: group_action == 'add-member'
 
 - name: remove member from a group 
   import_tasks: remove-member.yml
-  when: group_action == remove-member
+  when: group_action == 'remove-member'

@@ -1,7 +1,3 @@
-vars:
-  group_action: create # ( create, delete, modify, add-member, remove-member)
-
-tasks:
 
 - name: create group
   import_tasks: create-group.yml

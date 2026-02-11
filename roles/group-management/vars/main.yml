@@ -1,3 +1,5 @@
+group_action: create # ( create, delete, modify, add-member, remove-member)
+
 create_group_names: 
   - devops
   - dev

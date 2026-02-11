@@ -1,0 +1,25 @@
+- name: Check if user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ remove_member_member_name }}"
+  register: user_info
+  failed_when: user_info.failed
+
+- name: Check if group exists
+  ansible.builtin.getent:
+    database: group
+    key: "{{ remove_member_group_name }}"
+  register: group_info
+  failed_when: group_info.failed
+
+- name: Fail if user is not a member of the group
+  ansible.builtin.fail:
+    msg: "User '{{ remove_member_member_name }}' is not a member of group '{{ remove_member_group_name }}'"
+  when: >
+    user_name not in (group_info.ansible_facts.getent_group[remove_member_group_name][2].split(',') | default([]))
+
+- name: Remove user from group
+  ansible.builtin.user:
+    name: "{{ remove_member_member_name }}"
+    groups: "{{ remove_member_group_name }}"
+    append: no

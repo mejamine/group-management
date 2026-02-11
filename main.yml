@@ -1,0 +1,7 @@
+- name: group management for linux VM
+  hosts: server1
+  become: true
+
+  roles:
+   - role: group-management
+

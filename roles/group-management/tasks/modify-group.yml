@@ -1,0 +1,23 @@
+- name: Check if old group exists
+  ansible.builtin.getent:
+    database: group
+    key: "{{ modify_group_old_name }}"
+  register: old_group
+  failed_when: old_group.failed
+
+- name: Check if new group already exists
+  ansible.builtin.getent:
+    database: group
+    key: "{{ modify_group_new_name }}"
+  register: new_group
+  failed_when: false
+  changed_when: false
+
+- name: Fail if new group already exists
+  ansible.builtin.fail:
+    msg: "Group '{{ modify_group_new_name }}' already exists!"
+  when: new_group.failed == false
+
+- name: Rename the group
+  ansible.builtin.command:
+    cmd: groupmod -n {{ modify_group_new_name }} {{ modify_group_old_name }}

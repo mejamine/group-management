@@ -1,0 +1,21 @@
+- name: Check if user exists
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ add_member_member_name }}"
+  register: user_info
+  failed_when: user_info.failed
+  ignore_errors: false
+
+- name: Check if group exists
+  ansible.builtin.getent:
+    database: group
+    key: "{{ add_member_group_name }}"
+  register: group_info
+  failed_when: group_info.failed
+  ignore_errors: false
+
+- name: Add user to group
+  ansible.builtin.user:
+    name: "{{ add_member_member_name }}"
+    groups: "{{ add_member_group_name }}"
+    append: yes

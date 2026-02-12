@@ -18,8 +18,5 @@
   when: >
     remove_member_member_name not in (group_info.ansible_facts.getent_group[remove_member_group_name][2].split(',') | default([]))
 
-- name: Remove user from group
-  ansible.builtin.user:
-    name: "{{ remove_member_member_name }}"
-    groups: "{{ remove_member_group_name }}"
-    append: no
+- name: Remove user from a supplementary group
+  ansible.builtin.command: gpasswd -d {{ remove_member_member_name }} {{ remove_member_group_name }}

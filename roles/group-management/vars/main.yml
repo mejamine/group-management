@@ -7,7 +7,7 @@ create_group_names:
 modify_group_old_name: devops
 modify_group_new_name: gitops
 
-delete_groupe_name: testgitops
+delete_groupe_name: gitops
 delete_refactor_group_name: dev
 
 add_member_group_name: dev

@@ -1,13 +1,13 @@
-group_action: create # ( create, delete, modify, add-member, remove-member)
+group_action: delete # ( create, delete, modify, add-member, remove-member)
 
 create_group_names: 
   - devops
   - dev
 
 modify_group_old_name: devops
-modify_group_new_name: gitops
+modify_group_new_name: testgitops
 
-delete_groupe_name: gitops
+delete_groupe_name: testgitops
 delete_refactor_group_name: dev
 
 add_member_group_name: dev

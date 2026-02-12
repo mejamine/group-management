@@ -5,18 +5,15 @@
   register: old_group
   failed_when: old_group.failed
 
-- name: Check if new group already exists
+- name: get teh list of groups
   ansible.builtin.getent:
     database: group
-    key: "{{ modify_group_new_name }}"
-  register: new_group
-  failed_when: false
-  changed_when: false
+  register: all_groups
 
-- name: Fail if new group already exists
+- name: fail if new group exists
   ansible.builtin.fail:
-    msg: "Group '{{ modify_group_new_name }}' already exists!"
-  when: new_group.failed == false
+    msg: "new name exists"
+  when: modify_group_new_name in all_groups.ansible_facts.getent_group.keys()
 
 - name: Rename the group
   ansible.builtin.command:

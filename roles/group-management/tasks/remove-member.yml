@@ -16,7 +16,7 @@
   ansible.builtin.fail:
     msg: "User '{{ remove_member_member_name }}' is not a member of group '{{ remove_member_group_name }}'"
   when: >
-    user_name not in (group_info.ansible_facts.getent_group[remove_member_group_name][2].split(',') | default([]))
+    remove_member_member_name not in (group_info.ansible_facts.getent_group[remove_member_group_name][2].split(',') | default([]))
 
 - name: Remove user from group
   ansible.builtin.user:

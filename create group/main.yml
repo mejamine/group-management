@@ -1,0 +1,33 @@
+- name: Create Group
+  hosts: servers
+  become: true
+  vars:
+    create_group_names: ""
+
+  tasks:
+
+    - name: groups list
+      ansible.builtin.set_fact:
+        group_list: "{{ create_group_names.split(',') }}"
+
+    - name: Check if group exists
+      ansible.builtin.getent:
+        database: group
+        key: "{{ item }}"
+      register: group_check
+      ignore_errors: true
+      loop: "{{ create_group_names }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Fail if any group already exists
+      ansible.builtin.fail:
+        msg: "Group '{{ item.item }}' already exists!"
+      when: item is succeeded
+      loop: "{{ group_check.results }}"
+
+    - name: Create groups that do not exist
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ create_group_names }}"

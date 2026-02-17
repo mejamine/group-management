@@ -14,10 +14,6 @@
       register: group_info
       failed_when: group_info.failed
 
-    - name: Extract members
-      set_fact:
-        group_members: "{{ group_info.ansible_facts.getent_group[delete_groupe_name][2].split(',') if group_info.ansible_facts.getent_group[delete_groupe_name][2] else [] }}"
-
     - name: Check if files are owned by the group
       command: "find / -group {{ delete_groupe_name }} -print -quit"
       register: fs_dependency
@@ -31,19 +27,6 @@
           Files are still owned by this group.
           You must migrate ownership first.
       when: fs_dependency.stdout != ""
-
-    - name: Move users to fallback group
-      user:
-        name: "{{ item }}"
-        groups: "{{ delete_refactor_group_name }}"
-        append: yes
-      loop: "{{ group_members }}"
-      when: group_members | length > 0
-
-    - name: Remove users from old group
-      command: "gpasswd -d {{ item }} {{ delete_groupe_name }}"
-      loop: "{{ group_members }}"
-      when: group_members | length > 0
 
     - name: Delete the group
       group:

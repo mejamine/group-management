@@ -1,0 +1,25 @@
+- name: move memebers
+  hosts: servers
+  become: true
+  vars:
+    old_group: ""
+    new_group: ""
+
+  tasks:
+
+    - name: Extract members
+      set_fact:
+        group_members: "{{ group_info.ansible_facts.getent_group[old_group][2].split(',') if group_info.ansible_facts.getent_group[old_group][2] else [] }}"
+
+    - name: Move users to new group
+      user:
+        name: "{{ item }}"
+        groups: "{{ new_group }}"
+        append: yes
+      loop: "{{ group_members }}"
+      when: group_members | length > 0
+
+    - name: Remove users from old group
+      command: "gpasswd -d {{ item }} {{ old_group }}"
+      loop: "{{ group_members }}"
+      when: group_members | length > 0

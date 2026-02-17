@@ -45,6 +45,10 @@ Before running the template add a survey to define these variables :
 1. remove_member_group_name : group name
 2. remove_member_member_name : user username to remove from group
 
+### move Member from Group to an other
+Before running the template add a survey to define these variables :
+1. old_group : old group name
+2. new_group : new group name
 
 ---
 

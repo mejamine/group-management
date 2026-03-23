@@ -1,0 +1,42 @@
+---
+- name: Check user activity on the system
+  hosts: servers
+  become: true
+  vars:
+    target_user: "username_here"   
+
+  tasks:
+
+    - name: Check if user has running processes
+      shell: "pgrep -u {{ target_user }}"
+      register: user_processes
+      ignore_errors: true
+
+    - name: Display user processes
+      debug:
+        msg: "{{ target_user }} has running processes: {{ user_processes.stdout_lines | default([]) }}"
+
+    - name: Check if user has running services
+      shell: "systemctl list-units --type=service --all --no-legend | grep -i {{ target_user }}"
+      register: user_services
+      ignore_errors: true
+
+    - name: Display user-owned services
+      debug:
+        msg: "{{ target_user }} has services: {{ user_services.stdout_lines | default([]) }}"
+
+    - name: Find files owned by the user
+      find:
+        paths: /
+        file_type: any
+        recurse: yes
+        patterns: "*"
+        use_regex: false
+        follow: false
+        owner: "{{ target_user }}"
+      register: user_files
+      ignore_errors: true
+
+    - name: Display files owned by user
+      debug:
+        msg: "{{ target_user }} owns {{ user_files.matched }} files. Sample: {{ user_files.files[:10] | map(attribute='path') | list }}"

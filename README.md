@@ -37,8 +37,8 @@ Before running the template add a survey to define these variables :
 
 ### Add Member to Group
 Before running the template add a survey to define these variables :
-1. add_member_group_name : group name 
-2. add_member_member_name : user username to add
+1. add_member_groupS : groupS nameS (comma seperated)
+2. add_member_users : users usernameS to add (comma seperated)
 
 ### Remove Member from Group
 Before running the template add a survey to define these variables :

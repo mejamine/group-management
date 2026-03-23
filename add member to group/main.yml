@@ -1,30 +1,53 @@
-- name: Add Member to a Group
+- name: Add Members to Groups
   hosts: servers
   become: true
+
   vars:
-    add_member_group_name: ""
-    add_member_member_name: ""
+    # Convert comma-separated strings into clean lists
+    add_member_users: >-
+      {{ add_member_users.split(',') | map('trim') | reject('equalto','') | list
+         if add_member_users is string else add_member_users }}
+
+    add_member_groups: >-
+      {{ add_member_groups.split(',') | map('trim') | reject('equalto','') | list
+         if add_member_groups is string else add_member_groups }}
 
   tasks:
 
-    - name: Check if user exists
+    - name: Get all system users
       ansible.builtin.getent:
         database: passwd
-        key: "{{ add_member_member_name }}"
-      register: user_info
-      failed_when: user_info.failed
-      ignore_errors: false
+      register: all_users
 
-    - name: Check if group exists
+    - name: Get all system groups
       ansible.builtin.getent:
         database: group
-        key: "{{ add_member_group_name }}"
-      register: group_info
-      failed_when: group_info.failed
-      ignore_errors: false
+      register: all_groups
 
-    - name: Add user to group
+    - name: Identify missing users
+      set_fact:
+        missing_users: "{{ add_member_users | difference(all_users.ansible_facts.getent_passwd.keys() | list) }}"
+
+    - name: Identify missing groups
+      set_fact:
+        missing_groups: "{{ add_member_groups | difference(all_groups.ansible_facts.getent_group.keys() | list) }}"
+
+    - name: Show missing users
+      debug:
+        msg: "These users do NOT exist: {{ missing_users }}"
+      when: missing_users | length > 0
+
+    - name: Show missing groups
+      debug:
+        msg: "These groups do NOT exist: {{ missing_groups }}"
+      when: missing_groups | length > 0
+
+    - name: Add valid users to valid groups
       ansible.builtin.user:
-        name: "{{ add_member_member_name }}"
-        groups: "{{ add_member_group_name }}"
+        name: "{{ item.0 }}"
+        groups: "{{ item.1 }}"
         append: yes
+      loop: "{{ add_member_users | product(add_member_groups) | list }}"
+      when:
+        - item.0 in all_users.ansible_facts.getent_passwd
+        - item.1 in all_groups.ansible_facts.getent_group

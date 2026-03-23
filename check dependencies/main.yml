@@ -25,18 +25,19 @@
       debug:
         msg: "{{ target_user }} has services: {{ user_services.stdout_lines | default([]) }}"
 
-    - name: Find files owned by the user
+    - name: Find all files recursively
       find:
         paths: /
-        file_type: any
         recurse: yes
-        patterns: "*"
-        use_regex: false
-        follow: false
-        owner: "{{ target_user }}"
-      register: user_files
+        file_type: any
+      register: all_files
+      ignore_errors: true
+
+    - name: Filter files owned by the user
+      set_fact:
+        user_files: "{{ all_files.files | selectattr('pw_name', 'equalto', target_user) | list }}"
       ignore_errors: true
 
     - name: Display files owned by user
       debug:
-        msg: "{{ target_user }} owns {{ user_files.matched }} files. Sample: {{ user_files.files[:10] | map(attribute='path') | list }}"
+        msg: "{{ target_user }} owns {{ user_files | length }} files. Sample: {{ user_files[:10] | map(attribute='path') | list }}"

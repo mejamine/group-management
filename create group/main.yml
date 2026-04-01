@@ -16,7 +16,7 @@
         key: "{{ item }}"
       register: group_check
       ignore_errors: true
-      loop: "{{ create_group_names }}"
+      loop: "{{ group_list }}"
       loop_control:
         label: "{{ item }}"
 
@@ -30,4 +30,4 @@
       ansible.builtin.group:
         name: "{{ item }}"
         state: present
-      loop: "{{ create_group_names }}"
+      loop: "{{ group_list }}"
